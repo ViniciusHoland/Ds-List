@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.devvinicius.dslist.dto.GameDTO;
 import com.devvinicius.dslist.dto.GameMinDto;
 import com.devvinicius.dslist.entities.Game;
 import com.devvinicius.dslist.repositories.GameRepository;
+
+
 
 @Service
 public class GameService {
@@ -15,6 +19,8 @@ public class GameService {
 	@Autowired
 	private GameRepository gameRepository;
 	
+	// o spring indica ao banco de dados que a transação será somente de leitura
+	@Transactional(readOnly = true)
 	public List<GameMinDto> findAll() {
 		
 		//o game respository retorna tem uma tabela de games e ele retorna esses games para minha variavel result
@@ -27,6 +33,20 @@ public class GameService {
 		List<GameMinDto>  dto = result.stream().map(x -> new GameMinDto(x)).toList();
 		return dto;
 	}
+	
+	// o spring indica ao banco de dados que a transação será somente de leitura
+	@Transactional(readOnly = true)
+	public GameDTO findById(Long id) {
+		
+		Game result = gameRepository.findById(id).get();
+		// agora sim eu passo minha entidade game e chamo meu contrutor passando a entidade e vai preencher 
+		// na minha classe gameDTo
+		GameDTO dto = new GameDTO(result);
+		
+		return dto;
+	}
+	
+	
 	
 	
 }
