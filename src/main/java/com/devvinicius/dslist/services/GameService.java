@@ -40,8 +40,9 @@ public class GameService {
 	public GameDTO findById(Long id) {
 		
 		Game result = gameRepository.findById(id).get();
-		// agora sim eu passo minha entidade game e chamo meu contrutor passando a entidade e vai preencher 
-		// na minha classe gameDTo
+		
+		// agora sim eu passo minha entidade game e chamo meu construtor passando a entidade e vai preencher 
+		// na minha classe gameDTo sem precisar da conversão que fiz no metodo findAll
 		GameDTO dto = new GameDTO(result);
 		
 		return dto;

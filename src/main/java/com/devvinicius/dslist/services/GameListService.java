@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devvinicius.dslist.dto.GameListDTO;
 import com.devvinicius.dslist.dto.GameMinDto;
 import com.devvinicius.dslist.entities.GameList;
+import com.devvinicius.dslist.projections.GameMinProjection;
 import com.devvinicius.dslist.repositories.GameListRepository;
+import com.devvinicius.dslist.repositories.GameRepository;
 
 
 
@@ -18,6 +20,9 @@ public class GameListService {
 	
 	@Autowired
 	private GameListRepository gameListRepository;
+	
+	@Autowired
+	private GameRepository gameRepository;
 	
 	// o spring indica ao banco de dados que a transação será somente de leitura
 	@Transactional(readOnly = true)
@@ -32,6 +37,24 @@ public class GameListService {
 		// e no fim passe tudo para uma lista 
 		List<GameListDTO>  dto = result.stream().map(x -> new GameListDTO(x)).toList();
 		return dto;
+	}
+	
+	@Transactional
+	public void move(Long listId, int sourceIndex, int destinationIndex) {
+		
+		List<GameMinProjection> list = gameRepository.searchByList(listId);
+		
+		GameMinProjection obj = list.remove(sourceIndex);
+
+		list.add(destinationIndex, obj);
+		
+		int min = sourceIndex < destinationIndex ? sourceIndex : destinationIndex;
+		int max = sourceIndex > destinationIndex ? sourceIndex : destinationIndex;
+		
+		for(int i= min; i <= max; i++) {
+			gameListRepository.updateBelongingPosition(listId, list.get(i).getId(), i );
+		}
+		
 	}
 	
 	
